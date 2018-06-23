@@ -1,0 +1,100 @@
+<!--
+  Generated template for the HomePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Home</ion-title>
+    <ion-buttons end>
+      <img *ngIf="userProfile.avatar_url" class="profile-pic" width="50px;" [src]="userProfile.avatar_url">
+      <img>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <div>
+    <form novalidate (ngSubmit)="getCommits()" [formGroup]="searchForm">
+      <ion-row>
+      <ion-item ion-col>
+        <ion-label>Author</ion-label>
+        <ion-input type="author" [(ngModel)]="searchData.author" formControlName="author"></ion-input>
+      </ion-item>
+      <ion-item ion-col>
+        <ion-label>Organization</ion-label>
+        <ion-select interface="popover" [(ngModel)]="organization" formControlName="organization" (ionChange)="getOrgsRepo()">
+          <ion-option *ngFor="let org of orgList">{{org.login}}</ion-option>
+        </ion-select>
+        <div class="error" *ngIf="searchForm.get('organization').hasError('required') && searchForm.get('organization').touched">
+          Please select an organization
+        </div>
+      </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item ion-col>
+        <ion-label>Repository</ion-label>
+        <ion-select interface="popover" [disabled]="!organization || repoList.length == 0" [(ngModel)]="repo" formControlName="repo"
+          (ionChange)="getRepoBranches()">
+          <ion-option *ngFor="let repo of repoList">{{repo.name}}</ion-option>
+        </ion-select>
+        <div class="error" *ngIf="searchForm.get('repo').hasError('required') && searchForm.get('repo').touched">
+          Please select a Repository
+        </div>
+      </ion-item>
+      <ion-item ion-col>
+        <ion-label>Branch</ion-label>
+        <ion-select interface="popover" [disabled]="!repo || branchList.length == 0" [(ngModel)]="searchData.sha" formControlName="sha">
+          <ion-option *ngFor="let branch of branchList">{{branch.name}}</ion-option>
+        </ion-select>
+        <div class="error" *ngIf="searchForm.get('sha').hasError('required') && searchForm.get('sha').touched">
+          Please select a Branch
+        </div>
+      </ion-item>
+    </ion-row>
+    <ion-row>
+      <ion-item ion-col>
+        <ion-label>Since</ion-label>
+        <ion-datetime displayFormat="DD-MM-YYYY" [disabled]="!searchData.sha" [(ngModel)]="searchData.since" formControlName="since"></ion-datetime>
+        <div class="error" *ngIf="searchForm.get('since').hasError('required') && searchForm.get('since').touched">
+          Please select a Date
+        </div>
+      </ion-item>
+      <ion-item ion-col>
+        <ion-label>Until</ion-label>
+        <ion-datetime displayFormat="DD-MM-YYYY" [disabled]="!searchData.sha" [(ngModel)]="searchData.until" formControlName="until"></ion-datetime>
+        <div class="error" *ngIf="searchForm.get('until').hasError('required') && searchForm.get('until').touched">
+          Please select a Date
+        </div>
+      </ion-item>
+    </ion-row>
+      <button ion-button type="submit" [disabled]="searchForm.invalid" block>Get Commits</button>
+    </form>
+  </div>
+
+  <ion-list-header *ngIf="groupedCommits && groupedCommits.length > 0">Commits ({{commitCount}})</ion-list-header>
+  <ion-scroll *ngIf="groupedCommits && groupedCommits.length > 0" scrollY="true" style="width: 100%; height: 100%;">
+    <ion-list style="user-select: text;">
+      <ion-item-group *ngFor="let key of groupedCommits">
+
+        <ion-item-divider color="light" class="list-page-divider" sticky>
+          <ion-label>
+            {{key}} ({{groupedCommits[key].length}})
+            <ion-spinner *ngIf="isLoading" class="header-spinner"></ion-spinner>
+          </ion-label>
+        </ion-item-divider>
+        <ion-item *ngFor="let item of groupedCommits[key]" style="user-select: text;">
+          {{item.commit.message}}
+        </ion-item>
+
+      </ion-item-group>
+    </ion-list>
+  </ion-scroll>
+</ion-content>

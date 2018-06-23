@@ -1,0 +1,26 @@
+{
+  "name": "LeGit",
+  "app_id": "",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  },
+  "proxies": [
+    {
+      "path": "/login",
+      "proxyUrl": "https://github.com/login"
+    },
+    {
+      "path": "/user",
+      "proxyUrl": "https://api.github.com/user"
+    },
+    {
+      "path": "/orgs",
+      "proxyUrl": "https://api.github.com/orgs"
+    },
+    {
+      "path": "/repos",
+      "proxyUrl": "https://api.github.com/repos"
+    }
+  ]
+}
